@@ -1,13 +1,23 @@
-int[][] walls_original = {   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}   };
+int[][] walls_original = {   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
+                             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, };
 int[][] walls = walls_original;
 final float const_acceleration = 1;
 final float const_decceleration = 0.9;
@@ -19,26 +29,63 @@ public class player
     float[] acceleration = new float[2];
     float[] velocity = new float[2];
     float[] position = new float[2];
+    boolean DEBUG_INFORMATION = true;
+    float[] distances = new float[4];
+    int[] direction = new int[2];
 
-    // 1 = up, 2 = left, 3 = down, 4 = right
+    // 0 = up, 1 = left, 2 = down, 3 = right
     PVector[] corners = new PVector[4];
     PVector[] corners_position = new PVector[4];
-    float[][][] VERTEX_NEIGHBORS = new float[4][2][2];
+    PVector[][] VERTEX_NEIGHBORS = new PVector[4][2];
+    int[] neighbors = new int[4];
 
-    void PressCheck_ACCELERATION(char KEY, int acceleration_INDEX, int sign)
+    void PressCheck_ACCELERATION(char KEY, int acceleration_INDEX, int sign, int DIR_INDEX, int DIR_SIGN)
     {
-        if (key == KEY)
+        if(key == KEY)
         {
             acceleration[acceleration_INDEX] += const_acceleration * sign;
+            direction[DIR_INDEX] += 1*DIR_SIGN;
         }
     }
 
     void PressCheck_ACCELERATION_COMPLETE(int sign)
     {
-        PressCheck_ACCELERATION('w',1, -1*sign);
-        PressCheck_ACCELERATION('a',0, -1*sign);
-        PressCheck_ACCELERATION('s',1,  1*sign);
-        PressCheck_ACCELERATION('d',0,  1*sign);
+        PressCheck_ACCELERATION('w',1, -1*sign, 1, 1*sign);
+        PressCheck_ACCELERATION('a',0, -1*sign, 0,-1*sign);
+        PressCheck_ACCELERATION('s',1,  1*sign, 1,-1*sign);
+        PressCheck_ACCELERATION('d',0,  1*sign, 0, 1*sign);
+    }
+
+    //Defining the corner neighbors
+    // 0 = down left, 1 = up left, 2 = up right, 3 = down right
+    // 0 = x axis, 1 = y axis
+    void GET_NEIGHBORS_X(int index1, int index2, int index3, int sign)
+        {
+            VERTEX_NEIGHBORS[index1][index2] = new PVector(corners_position[index3].x + (1*sign), corners_position[index3].y);
+        }     
+    void GET_NEIGHBORS_Y(int index1,int index2,int index3,int sign)
+        {
+            VERTEX_NEIGHBORS[index1][index2] = new PVector(corners_position[index3].x, corners_position[index3].y + (1*sign));
+        }  
+    
+    void CHECK_NEIGHBORS_X(int i1, int i2, int i3, int i4, int i5)
+    {
+
+        /*fill(147, 52, 235, 50);
+        noStroke();
+        shape_temp(int(VERTEX_NEIGHBORS[i1][i2].x), int(VERTEX_NEIGHBORS[i1][i2].y));
+
+        fill(235, 52, 217, 50);
+        shape_temp(int(VERTEX_NEIGHBORS[i3][i4].x), int(VERTEX_NEIGHBORS[i3][i4].y));*/
+
+        if(walls[int(VERTEX_NEIGHBORS[i1][i2].y)][int(VERTEX_NEIGHBORS[i1][i2].x)] == 1 
+        || walls[int(VERTEX_NEIGHBORS[i3][i4].y)][int(VERTEX_NEIGHBORS[i3][i4].x)] == 1) 
+        {
+            neighbors[i5]=1;
+        }else 
+        {
+            neighbors[i5]=0;
+        }
     }
 
     void update()
@@ -59,13 +106,59 @@ public class player
             corners_position[i] = new PVector(  (floor(corners[i].x /  w_wl)) ,    (floor(corners[i].y /   h_hl)) );
         }
 
+        //GET NEIGHBOR POSITIONS  
+
+        GET_NEIGHBORS_X(0, 0, 0, -1);
+        GET_NEIGHBORS_X(1, 0, 1, -1);
+        GET_NEIGHBORS_X(2, 0, 2,  1);
+        GET_NEIGHBORS_X(3, 0, 3,  1);
+
+        GET_NEIGHBORS_Y(0, 1, 0,  1);
+        GET_NEIGHBORS_Y(1, 1, 1, -1);
+        GET_NEIGHBORS_Y(2, 1, 2, -1);
+        GET_NEIGHBORS_Y(3, 1, 3,  1);
+
+        //define if each direction has a nearby neighbor
+        CHECK_NEIGHBORS_X(1,1,2,1,0);
+        CHECK_NEIGHBORS_X(1,0,0,0,1);
+        CHECK_NEIGHBORS_X(0,1,3,1,2);
+        CHECK_NEIGHBORS_X(2,0,3,0,3);
+
+        //defining the distance from the cube to the wall
+        if (neighbors[0] == 1) {
+         distances[0] = corners[1].y - (wall_height*(VERTEX_NEIGHBORS[1][1].y+1));   
+                 stroke(237, 74, 74);
+         line(corners[1].x + const_player_size/2, wall_height*(VERTEX_NEIGHBORS[1][1].y+1), 
+              corners[1].x + const_player_size/2, corners[1].y);
+        }else {
+            distances[0] = height+1;
+        }
+
         // UPDATING VELOCITY BY ACCELERATION
         velocity[0] += acceleration[0];
-        velocity[1] += acceleration[1];
 
         //UPDATING POSITION BY VELOCITY
-        position[0] += velocity[0];
+        if (distances[0] < abs(velocity[1])) 
+            {
+                if (distances[0] < height+1 && neighbors[0] == 1)
+                {
+                    if (distances[0] < 10 && direction[1] == 1) 
+                    {
+                        velocity[1] = 0;      
+                    }
+                    else 
+                    {
+                        position[1] += distances[0];  
+                    }
+                }
+            }
+        else 
+        {
         position[1] += velocity[1];
+        velocity[1] += acceleration[1];
+        }
+        
+        position[0] += velocity[0];
 
         //UPDATING VELOCITY SO IT ALWAYS SLOWS DOWN
         velocity[0] *= const_decceleration;
@@ -83,15 +176,35 @@ public class player
         vertex(corners[3].x , corners[3].y);
         endShape();
         //square(position[0], position[1], const_player_size);
-        fill(177, 3, 252, 50);
+        
+        if(DEBUG_INFORMATION)
+        {        fill(177, 3, 252, 50);
 
-        for(int i = 0; i<4; i++){beginShape();
-        vertex((wall_height* corners_position[i].x)    , wall_width*(corners_position[i].y+1));
-        vertex((wall_height* corners_position[i].x)    , wall_width* corners_position[i].y    );
-        vertex((wall_height*(corners_position[i].x+1)) , wall_width* corners_position[i].y    );
-        vertex((wall_height*(corners_position[i].x+1)) , wall_width*(corners_position[i].y+1));
-        endShape(); }
+        for(int i = 0; i<4; i++)
+        {
+            shape_temp(corners_position[i].x, corners_position[i].y);
+        }
+
+        fill(52, 235, 225, 50);
+
+        for(int i = 0; i<4; i++)
+        {
+            for(int j = 0; j<2; j++)
+            {
+                shape_temp(VERTEX_NEIGHBORS[i][j].x,VERTEX_NEIGHBORS[i][j].y);
+            }
+        }
+        }
 
     }
+}
 
+void shape_temp(float x,float y)
+{
+    beginShape();
+    vertex((wall_height* x)    , wall_width*(y+1));
+    vertex((wall_height* x)    , wall_width* y    );
+    vertex((wall_height*(x+1)) , wall_width* y    );
+    vertex((wall_height*(x+1)) , wall_width*(y+1));
+    endShape();
 }

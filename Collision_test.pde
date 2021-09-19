@@ -9,6 +9,13 @@ void setup()
 
     player1.position[0] = (width/2);
     player1.position[1] = (height/2);
+
+    player1.direction[0] = 0;
+    player1.direction[1] = 0;
+
+
+    player1.DEBUG_INFORMATION = false;
+
     frameRate(60);
 
     wall_height = height/walls[0].length;
@@ -36,23 +43,26 @@ void draw()
         {
             if (walls[i][j] == 1)
             {
-                beginShape();
-                vertex((wall_height*j)    , wall_width*(i+1));
-                vertex((wall_height*j)    , wall_width*i    );
-                vertex((wall_height*(j+1)), wall_width*i    );
-                vertex((wall_height*(j+1)), wall_width*(i+1));
-                endShape();             
+                shape_temp(float(j),float(i));          
             }
         }
     }
 
     fill(125);
-    text(" VELOCITY : x: " + player1.velocity[0] + " ,y: " + player1.velocity[1], 10, 10);
-    text(" POSITION : x: " + player1.position[0] + " ,y: " + player1.position[1], 10 ,20);
-    text(" FPS: " + frameRate, 10, 30);
+    text(" VELOCITY : x: " + ceil(player1.velocity[0]) + " ,y: " + ceil(player1.velocity[1]), 10, 10);
+    text(" POSITION : x: " + ceil(player1.position[0]) + " ,y: " + ceil(player1.position[1]), 10 ,20);
+    text(" FPS: " + ceil(frameRate), 10, 30);
+
+    text(" up: " + player1.neighbors[0], 10, 60);
+    text(" left: " + player1.neighbors[1], 10, 70);
+    text(" down: " + player1.neighbors[2], 10, 80);
+    text(" right: " + player1.neighbors[3], 10, 90);
+
+    text(" up distance: " + player1.distances[0], 10, 100);
 
     player1.display(0); 
 
+    println(player1.direction[1]);
 }
 
 //key pressing stuffs
