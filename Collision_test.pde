@@ -7,12 +7,14 @@ void setup()
     player1.acceleration[0] = 0;
     player1.acceleration[1] = 0;
 
-    player1.position[0] = (width/2);
-    player1.position[1] = (height/2);
+    //player1.position[0] = (width/2);
+    //player1.position[1] = (height/2);
+
+    player1.position[0] = 100;
+    player1.position[1] = 900;
 
     player1.direction[0] = 0;
     player1.direction[1] = 0;
-
 
     player1.DEBUG_INFORMATION = false;
 
@@ -59,6 +61,10 @@ void draw()
     text(" right: " + player1.neighbors[3], 10, 90);
 
     text(" up distance: " + player1.distances[0], 10, 100);
+    text(" down distance: " + player1.distances[2], 10, 110);
+    text(" left distance: " + player1.distances[1], 10, 120);
+    text(" right distance: " + player1.distances[3], 10, 130);
+    
 
     player1.display(0); 
 

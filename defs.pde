@@ -8,13 +8,13 @@ int[][] walls_original = {   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                              {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
                              {1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1},
                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1},
                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1},
                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
                              {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, };
@@ -32,6 +32,7 @@ public class player
     boolean DEBUG_INFORMATION = true;
     float[] distances = new float[4];
     int[] direction = new int[2];
+    boolean[] update = new boolean[2];
 
     // 0 = up, 1 = left, 2 = down, 3 = right
     PVector[] corners = new PVector[4];
@@ -78,18 +79,69 @@ public class player
         fill(235, 52, 217, 50);
         shape_temp(int(VERTEX_NEIGHBORS[i3][i4].x), int(VERTEX_NEIGHBORS[i3][i4].y));*/
 
-        if(walls[int(VERTEX_NEIGHBORS[i1][i2].y)][int(VERTEX_NEIGHBORS[i1][i2].x)] == 1 
+        if(VERTEX_NEIGHBORS[i1][i2].y >= 0 && VERTEX_NEIGHBORS[i1][i2].x >= 0 && VERTEX_NEIGHBORS[i3][i4].y >= 0 && VERTEX_NEIGHBORS[i3][i4].x >= 0
+        && VERTEX_NEIGHBORS[i1][i2].y <= 19 && VERTEX_NEIGHBORS[i1][i2].x <= 19 && VERTEX_NEIGHBORS[i3][i4].y <= 19 && VERTEX_NEIGHBORS[i3][i4].x <= 19)
+        {if(walls[int(VERTEX_NEIGHBORS[i1][i2].y)][int(VERTEX_NEIGHBORS[i1][i2].x)] == 1 
         || walls[int(VERTEX_NEIGHBORS[i3][i4].y)][int(VERTEX_NEIGHBORS[i3][i4].x)] == 1) 
         {
             neighbors[i5]=1;
         }else 
         {
             neighbors[i5]=0;
+        }}
+    }
+
+    void POSITION_COLLISIONS(int dist_index, int axis_index,int neighbors_index, int DIRECTION_SIGN, int DIRECTION_)
+        {
+            if (distances[dist_index] < abs(velocity[axis_index])) 
+                {
+                    if (distances[dist_index] != height+1 && neighbors[neighbors_index] == 1)
+                    {
+                        if (distances[dist_index] < 10 && direction[axis_index] == DIRECTION_)
+                        {
+                            velocity[axis_index] = 0;
+                            update[1]=false;
+                        }
+                    }
+                }
+                else 
+                {
+                    if(direction[axis_index] == DIRECTION_)
+                    {
+                    position[axis_index] += velocity[axis_index];
+                    }
+                }
+        }
+
+    void GET_DIST_Y(int DIR_INDEX_, int i1, int i2, int CORNER_INDEX, float offset_sign)
+    {
+        if (neighbors[DIR_INDEX_] == 1) 
+        {
+         distances[DIR_INDEX_] = abs((corners[CORNER_INDEX].y ) - (wall_height*(VERTEX_NEIGHBORS[i1][i2].y+(1*offset_sign)))) ;
+        }
+        else 
+        {
+            distances[DIR_INDEX_] = height+1;
+        }
+    }
+
+    void GET_DIST_X(int DIR_INDEX_, int i1, int i2, int CORNER_INDEX, float offset_sign)
+    {
+        if (neighbors[DIR_INDEX_] == 1) 
+        {
+         distances[DIR_INDEX_] = abs((corners[CORNER_INDEX].x) - (wall_height*(VERTEX_NEIGHBORS[i1][i2].x+(1*offset_sign))));
+        }
+        else 
+        {
+            distances[DIR_INDEX_] = height+1;
         }
     }
 
     void update()
     {
+
+        update[0] = true;
+        update[1] = true;
 
         float w_wl = width/walls.length;
         float h_hl = height/walls[0].length;
@@ -125,40 +177,32 @@ public class player
         CHECK_NEIGHBORS_X(2,0,3,0,3);
 
         //defining the distance from the cube to the wall
-        if (neighbors[0] == 1) {
-         distances[0] = corners[1].y - (wall_height*(VERTEX_NEIGHBORS[1][1].y+1));   
-                 stroke(237, 74, 74);
-         line(corners[1].x + const_player_size/2, wall_height*(VERTEX_NEIGHBORS[1][1].y+1), 
-              corners[1].x + const_player_size/2, corners[1].y);
-        }else {
-            distances[0] = height+1;
-        }
+        GET_DIST_Y(0, 1, 1, 1, 1);
+        GET_DIST_Y(2, 0, 1, 0, 0);
+
+        GET_DIST_X(1, 2, 0, 0, -2);
+        GET_DIST_X(3, 3, 0, 2, 0);
 
         // UPDATING VELOCITY BY ACCELERATION
         velocity[0] += acceleration[0];
+        velocity[1] += acceleration[1];
 
         //UPDATING POSITION BY VELOCITY
-        if (distances[0] < abs(velocity[1])) 
-            {
-                if (distances[0] < height+1 && neighbors[0] == 1)
+        POSITION_COLLISIONS(0, 1, 0, 1, 1);
+        POSITION_COLLISIONS(2, 1, 2, -1,-1);
+
+        POSITION_COLLISIONS(1, 0, 1, 1,-1);
+        POSITION_COLLISIONS(3, 0, 3, 1, 1);
+
+        if(direction[1] == 0 && distances[0]> 5 && distances[2] > 5)
                 {
-                    if (distances[0] < 10 && direction[1] == 1) 
-                    {
-                        velocity[1] = 0;      
-                    }
-                    else 
-                    {
-                        position[1] += distances[0];  
-                    }
+                    position[1] += velocity[1];
                 }
-            }
-        else 
-        {
-        position[1] += velocity[1];
-        velocity[1] += acceleration[1];
-        }
-        
-        position[0] += velocity[0];
+
+        if(direction[0] == 0 && distances[1] > 5 && distances[3] > 5)
+                {
+                    position[0] += velocity[0];
+                }
 
         //UPDATING VELOCITY SO IT ALWAYS SLOWS DOWN
         velocity[0] *= const_decceleration;
