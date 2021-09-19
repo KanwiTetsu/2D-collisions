@@ -17,12 +17,15 @@ void setup()
 
 void draw()
 {
-    background(255);   
+    background(255);  
+
+    
 
     stroke(0);
     fill(0);
     player1.update();
-    player1.display(0); 
+
+    fill(0);
 
     //--
 
@@ -31,21 +34,14 @@ void draw()
     for(int i = 0; i < walls.length; i++)
     {   for(int j = 0; j < walls[0].length; j++)
         {
-            if (walls[i][j] != 0)
+            if (walls[i][j] == 1)
             {
                 beginShape();
-
-                /*    -+  ++
-
-                      --  +-  */    
-
-                vertex((wall_width*i)             , wall_height*j + wall_height);
-                vertex((wall_width*i)             , wall_height*j              );
-                vertex((wall_width*i) + wall_width, wall_height*j              );
-                vertex((wall_width*i) + wall_width, wall_height*j + wall_height);
-
-                endShape();
-                //square(wall_width*i , wall_height*j, wall_height);
+                vertex((wall_height*j)    , wall_width*(i+1));
+                vertex((wall_height*j)    , wall_width*i    );
+                vertex((wall_height*(j+1)), wall_width*i    );
+                vertex((wall_height*(j+1)), wall_width*(i+1));
+                endShape();             
             }
         }
     }
@@ -54,6 +50,8 @@ void draw()
     text(" VELOCITY : x: " + player1.velocity[0] + " ,y: " + player1.velocity[1], 10, 10);
     text(" POSITION : x: " + player1.position[0] + " ,y: " + player1.position[1], 10 ,20);
     text(" FPS: " + frameRate, 10, 30);
+
+    player1.display(0); 
 
 }
 
